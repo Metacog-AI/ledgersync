@@ -1,0 +1,68 @@
+{
+  "name": "metacog-ledgersync",
+  "version": "0.1.0",
+  "description": "Shared context ledger for multi-agent development",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "ledgersync": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "templates",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc && npm run copy-schema",
+    "prepare": "npm run build",
+    "copy-schema": "node -e \"require('fs').cpSync('src/schema', 'dist/schema', {recursive: true})\"",
+    "dev": "tsx src/cli.ts",
+    "start": "node dist/cli.js",
+    "test": "vitest"
+  },
+  "keywords": [
+    "ai",
+    "agents",
+    "context",
+    "claude",
+    "cursor",
+    "antigravity",
+    "mcp"
+  ],
+  "author": "Abu Syed",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/metacog-ai/ledgersync"
+  },
+  "homepage": "https://github.com/metacog-ai/ledgersync#readme",
+  "bugs": {
+    "url": "https://github.com/metacog-ai/ledgersync/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/uuid": "^10.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
+  },
+  "dependencies": {
+    "ajv": "^8.0.0",
+    "ajv-formats": "^3.0.0",
+    "chalk": "^5.0.0",
+    "commander": "^12.0.0",
+    "uuid": "^9.0.0",
+    "yaml": "^2.0.0"
+  }
+}

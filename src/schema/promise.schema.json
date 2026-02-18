@@ -1,0 +1,130 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://metacog.dev/ledgersync/promise.schema.json",
+    "title": "PromiseEntry",
+    "description": "A bilateral commitment between agents in LedgerSync",
+    "type": "object",
+    "required": [
+        "id",
+        "timestamp",
+        "promiser",
+        "promisee",
+        "promise",
+        "status"
+    ],
+    "properties": {
+        "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier (UUID v4)"
+        },
+        "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 timestamp"
+        },
+        "promiser": {
+            "type": "object",
+            "required": ["agent"],
+            "properties": {
+                "agent": {
+                    "type": "string",
+                    "description": "Agent making the promise"
+                },
+                "session": {
+                    "type": "string",
+                    "description": "Session ID if relevant"
+                }
+            }
+        },
+        "promisee": {
+            "type": "object",
+            "required": ["agent"],
+            "properties": {
+                "agent": {
+                    "type": "string",
+                    "description": "Target agent or '*' for any"
+                },
+                "scope": {
+                    "type": "string",
+                    "enum": ["session", "project", "permanent"],
+                    "description": "How long the promise is valid"
+                }
+            }
+        },
+        "promise": {
+            "type": "object",
+            "required": ["type", "summary"],
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": ["will-do", "will-not-do", "will-maintain", "will-provide"],
+                    "description": "Type of commitment"
+                },
+                "summary": {
+                    "type": "string",
+                    "maxLength": 200,
+                    "description": "What is being promised"
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Longer explanation"
+                },
+                "conditions": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Prerequisites or conditions"
+                }
+            }
+        },
+        "context": {
+            "type": "object",
+            "properties": {
+                "relatedEntries": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Related ledger entry IDs"
+                },
+                "artifacts": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Files this affects"
+                },
+                "constraintRefs": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Constraints this supports"
+                },
+                "userPrompt": {
+                    "type": "string",
+                    "description": "Original user request"
+                }
+            }
+        },
+        "status": {
+            "type": "string",
+            "enum": ["active", "fulfilled", "broken", "withdrawn", "superseded"],
+            "description": "Current status of the promise"
+        },
+        "resolvedBy": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Report ID that resolved this"
+        },
+        "resolvedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the promise was resolved"
+        },
+        "supersededBy": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Promise ID if superseded"
+        },
+        "tags": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Categorization tags"
+        }
+    }
+}

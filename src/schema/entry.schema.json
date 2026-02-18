@@ -1,0 +1,229 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://metacog.dev/ledgersync/entry.schema.json",
+    "title": "LedgerEntry",
+    "description": "A single entry in the metacog-ledgersync ledger",
+    "type": "object",
+    "required": [
+        "id",
+        "timestamp",
+        "agent",
+        "session",
+        "action",
+        "reasoning",
+        "tools",
+        "artifacts"
+    ],
+    "properties": {
+        "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier (UUID v4)"
+        },
+        "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 timestamp"
+        },
+        "agent": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Agent identifier"
+                },
+                "model": {
+                    "type": "string",
+                    "description": "Model name (e.g., claude-sonnet-4-20250514)"
+                },
+                "version": {
+                    "type": "string",
+                    "description": "Agent version"
+                }
+            }
+        },
+        "session": {
+            "type": "object",
+            "required": [
+                "id",
+                "entryIndex"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "Session identifier"
+                },
+                "entryIndex": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Sequential index within session"
+                },
+                "parentEntryId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "Reference to prior entry"
+                }
+            }
+        },
+        "action": {
+            "type": "object",
+            "required": [
+                "type",
+                "summary"
+            ],
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "create",
+                        "modify",
+                        "delete",
+                        "analyze",
+                        "plan",
+                        "debug",
+                        "refactor",
+                        "other"
+                    ]
+                },
+                "summary": {
+                    "type": "string",
+                    "maxLength": 200,
+                    "description": "One-line summary"
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Longer description if needed"
+                }
+            }
+        },
+        "reasoning": {
+            "type": "object",
+            "required": [
+                "intent"
+            ],
+            "properties": {
+                "intent": {
+                    "type": "string",
+                    "description": "What was the agent trying to achieve?"
+                },
+                "considerations": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Trade-offs, alternatives considered"
+                },
+                "assumptions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Assumptions made"
+                },
+                "uncertainties": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Things the agent wasn't sure about"
+                },
+                "confidence": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "description": "Confidence score 0.0 - 1.0"
+                }
+            }
+        },
+        "tools": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "parameters": {
+                        "type": "object"
+                    }
+                }
+            }
+        },
+        "artifacts": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "path",
+                    "action"
+                ],
+                "properties": {
+                    "path": {
+                        "type": "string"
+                    },
+                    "action": {
+                        "type": "string",
+                        "enum": [
+                            "created",
+                            "modified",
+                            "deleted",
+                            "read"
+                        ]
+                    },
+                    "linesChanged": {
+                        "type": "integer"
+                    },
+                    "summary": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "userPrompt": {
+            "type": "string",
+            "description": "The human's request (summarized)"
+        },
+        "tags": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "relatedEntries": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "format": "uuid"
+            }
+        },
+        "grounding": {
+            "type": "object",
+            "properties": {
+                "philosophyRefs": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Paths to philosophy docs consulted"
+                },
+                "constraintsApplied": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Which constraints influenced this action"
+                },
+                "alignmentNotes": {
+                    "type": "string",
+                    "description": "How this aligns with product philosophy"
+                }
+            }
+        }
+    }
+}

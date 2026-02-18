@@ -1,0 +1,101 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://metacog.dev/ledgersync/report.schema.json",
+    "title": "WorkReport",
+    "description": "A work report on promise progress in LedgerSync",
+    "type": "object",
+    "required": [
+        "id",
+        "timestamp",
+        "reporter",
+        "promiseId",
+        "report"
+    ],
+    "properties": {
+        "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier (UUID v4)"
+        },
+        "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 timestamp"
+        },
+        "reporter": {
+            "type": "object",
+            "required": ["agent", "role"],
+            "properties": {
+                "agent": {
+                    "type": "string",
+                    "description": "Agent making the report"
+                },
+                "role": {
+                    "type": "string",
+                    "enum": ["actor", "witness", "human"],
+                    "description": "Reporter's role"
+                },
+                "session": {
+                    "type": "string",
+                    "description": "Session ID if relevant"
+                }
+            }
+        },
+        "promiseId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Promise this report is about"
+        },
+        "report": {
+            "type": "object",
+            "required": ["workCompleted", "confidenceInCompletion"],
+            "properties": {
+                "workCompleted": {
+                    "type": "string",
+                    "description": "What work was done"
+                },
+                "remaining": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "What's left to do"
+                },
+                "blockers": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "What's blocking completion"
+                },
+                "confidenceInCompletion": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "description": "Confidence score 0.0-1.0"
+                }
+            }
+        },
+        "verdict": {
+            "type": "object",
+            "required": ["status", "reasoning"],
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "enum": ["fulfilled", "partial", "broken"],
+                    "description": "Fulfillment verdict"
+                },
+                "reasoning": {
+                    "type": "string",
+                    "description": "Why this verdict"
+                }
+            }
+        },
+        "relatedEntries": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Ledger entries that did the work"
+        },
+        "tags": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Categorization tags"
+        }
+    }
+}
