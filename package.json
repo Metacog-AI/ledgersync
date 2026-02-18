@@ -1,6 +1,6 @@
 {
   "name": "metacog-ledgersync",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Shared context ledger for multi-agent development",
   "type": "module",
   "main": "dist/index.js",
