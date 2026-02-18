@@ -1,7 +1,7 @@
 {
   "name": "metacog-ledgersync",
-  "version": "0.1.2",
-  "description": "Shared context ledger for multi-agent development",
+  "version": "0.2.0",
+  "description": "Shared memory and grounding for AI coding agents",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

@@ -1,30 +1,26 @@
-# LedgerSync Integration for Cursor
+# --- LedgerSync Integration ---
+
+# LedgerSync Integration
 
 ## CRITICAL: Shared Context Protocol
 
-This project uses **metacog-ledgersync** for shared context across AI agents (Claude Code, Cursor, Antigravity). You MUST follow this protocol.
+This project uses **LedgerSync** for shared context across AI coding agents. You MUST follow this protocol.
 
 ---
 
 ## On Session Start
 
-1. **Read the ledger** to understand what other agents did:
+1. **Read grounding docs** registered in `.ledgersync/config.yaml`:
+   - Check the `philosophy.required` array
+   - These docs define the product's DNA — read ALL of them before doing any work
+   - Your decisions must align with these docs
+
+2. **Read the ledger** to understand what other agents did:
    ```
    Check: .ledgersync/ledger.jsonl (last 20 entries)
    ```
 
-2. **Read active promises** to see what agents committed to:
-   ```
-   Check: .ledgersync/promises.jsonl (filter status: "active")
-   ```
-
-3. **Read philosophy docs** registered in `.ledgersync/config.yaml`:
-   - Check the `philosophy.required` array
-   - These docs contain product values and constraints
-
-4. **Check constraints** before any action:
-   - Look at `constraints` in config.yaml
-   - NEVER violate a `severity: critical` constraint
+3. **Check for relevant context** on files you'll touch — scan ledger for entries with those files in `artifacts`
 
 ---
 
@@ -33,12 +29,12 @@ This project uses **metacog-ledgersync** for shared context across AI agents (Cl
 Append an entry to `.ledgersync/ledger.jsonl`. Format (single line, no pretty print):
 
 ```json
-{"id":"[UUID-v4]","timestamp":"[ISO-8601]","agent":{"name":"cursor","model":"[model]"},"session":{"id":"[session-uuid]","entryIndex":[n]},"action":{"type":"[create|modify|delete|analyze|plan|debug|refactor|other]","summary":"[max 200 chars - WHAT you did]"},"reasoning":{"intent":"[WHY you did it]","considerations":["[trade-offs]"],"assumptions":["[assumptions]"],"uncertainties":["[unsure things]"]},"tools":[{"name":"[tool]"}],"artifacts":[{"path":"[file]","action":"[created|modified|deleted|read]"}]}
+{"id":"[UUID-v4]","timestamp":"[ISO-8601]","agent":{"name":"cursor","model":"[model]"},"session":{"id":"[session-uuid]","entryIndex":[n]},"action":{"type":"[create|modify|delete|analyze|plan|debug|refactor|other]","summary":"[max 200 chars - WHAT you did]"},"reasoning":{"intent":"[WHY you did it]","considerations":["[trade-offs]"],"assumptions":["[assumptions]"],"uncertainties":["[unsure things]"]},"tools":[{"name":"[tool]"}],"artifacts":[{"path":"[file]","action":"[created|modified|deleted|read]"}],"grounding":{"philosophyRefs":["[grounding docs you consulted]"],"alignmentNotes":"[how this aligns with product philosophy]"}}
 ```
 
 ### Minimal Example
 ```json
-{"id":"a1b2c3d4-5678-90ab-cdef-1234567890ab","timestamp":"2026-01-16T02:15:00Z","agent":{"name":"cursor"},"session":{"id":"sess-001","entryIndex":0},"action":{"type":"modify","summary":"Fixed auth bug in middleware"},"reasoning":{"intent":"User reported login failures"},"tools":[],"artifacts":[{"path":"src/auth.ts","action":"modified"}]}
+{"id":"a1b2c3d4-5678-90ab-cdef-1234567890ab","timestamp":"2026-01-16T02:15:00Z","agent":{"name":"cursor"},"session":{"id":"sess-001","entryIndex":0},"action":{"type":"modify","summary":"Fixed auth bug in middleware"},"reasoning":{"intent":"User reported login failures"},"tools":[],"artifacts":[{"path":"src/auth.ts","action":"modified"}],"grounding":{"philosophyRefs":["./docs/philosophy.md"],"alignmentNotes":"Security fix aligns with security-first principle"}}
 ```
 
 ---
@@ -48,10 +44,10 @@ Append an entry to `.ledgersync/ledger.jsonl`. Format (single line, no pretty pr
 Before modifying any file:
 
 1. Scan ledger for recent entries touching that file
-2. If another agent modified it in last 24 hours:
+2. If another agent modified it recently:
    - Read their `reasoning.intent`
    - If your change conflicts, WARN the user:
-     > "⚠️ Claude Code modified `src/auth.ts` 2 hours ago to [their intent]. My change might conflict. Proceed?"
+     > "[Agent] modified `src/auth.ts` 2 hours ago to [their intent]. My change might conflict. Proceed?"
 3. If you proceed despite conflict, document it in your entry
 
 ---
@@ -62,7 +58,7 @@ Before modifying any file:
 |------|-------------|
 | **Append-only** | Never modify or delete past ledger entries |
 | **Capture WHY** | `reasoning.intent` is more valuable than `action.summary` |
-| **Check constraints** | Read config.yaml constraints before acting |
+| **Ground decisions** | Read grounding docs, reference them in `grounding` field |
 | **Agents can disagree** | You CAN override another agent, but document why |
 
 ---
@@ -71,27 +67,28 @@ Before modifying any file:
 
 | Field | Required | Description |
 |-------|----------|-------------|
-| `id` | ✅ | UUID v4 |
-| `timestamp` | ✅ | ISO 8601 with timezone |
-| `agent.name` | ✅ | "cursor" |
-| `session.id` | ✅ | UUID for your session |
-| `session.entryIndex` | ✅ | 0, 1, 2... per session |
-| `entryType` | ❌ | handoff/transition/implementation/bugfix/review |
-| `action.type` | ✅ | create/modify/delete/analyze/plan/debug/refactor/other |
-| `action.summary` | ✅ | One-line summary (max 200 chars) |
-| `reasoning.intent` | ✅ | Why you did this |
-| `tools` | ✅ | Array of tools called |
-| `artifacts` | ✅ | Array of files touched |
-| `reasoning.considerations` | ❌ | Trade-offs considered |
-| `reasoning.uncertainties` | ❌ | Things you're unsure about |
-| `reasoning.confidence` | ❌ | 0.0-1.0 confidence score |
-| `grounding.constraintsApplied` | ❌ | Constraints that influenced you |
+| `id` | Yes | UUID v4 |
+| `timestamp` | Yes | ISO 8601 with timezone |
+| `agent.name` | Yes | Your agent name (e.g. "cursor") |
+| `session.id` | Yes | UUID for your session |
+| `session.entryIndex` | Yes | 0, 1, 2... per session |
+| `entryType` | No | handoff/transition/implementation/bugfix/review |
+| `action.type` | Yes | create/modify/delete/analyze/plan/debug/refactor/other |
+| `action.summary` | Yes | One-line summary (max 200 chars) |
+| `reasoning.intent` | Yes | Why you did this |
+| `tools` | Yes | Array of tools called |
+| `artifacts` | Yes | Array of files touched |
+| `reasoning.considerations` | No | Trade-offs considered |
+| `reasoning.uncertainties` | No | Things you're unsure about |
+| `reasoning.confidence` | No | 0.0-1.0 confidence score |
+| `grounding.philosophyRefs` | No | Grounding docs that influenced you |
+| `grounding.alignmentNotes` | No | How this aligns with product philosophy |
 
 ---
 
 ## Entry Types
 
-Use `entryType` for semantic structure. Full spec: `LedgerSync/templates/ENTRY_TYPES.md`
+Use `entryType` for semantic structure:
 
 | Type | When | Who |
 |------|------|-----|
@@ -114,45 +111,5 @@ When switching agents:
 
 ### Transition Example (When You Start)
 ```json
-{"entryType":"transition","transition":{"fromAgent":"claude-code","fromSessionId":"[id]","fromEntryId":"[id]","contextAcquired":{"entriesRead":4,"philosophyDocsRead":[],"filesIndexed":[]},"inheritedState":{"completed":[],"deferred":[],"blockers":[]},"readiness":{"confident":true,"clarificationsNeeded":[],"proposedNextSteps":[]}}}
+{"entryType":"transition","transition":{"fromAgent":"[prior-agent]","fromSessionId":"[id]","fromEntryId":"[id]","contextAcquired":{"entriesRead":4,"philosophyDocsRead":[],"filesIndexed":[]},"inheritedState":{"completed":[],"deferred":[],"blockers":[]},"readiness":{"confident":true,"clarificationsNeeded":[],"proposedNextSteps":[]}}}
 ```
-
----
-
-## Promise Protocol (Bilateral Commitments)
-
-LedgerSync supports **promises** — pre-action commitments between agents.
-
-### When to Make Promises
-
-Make a promise when starting **multi-step work**. Append to `.ledgersync/promises.jsonl`:
-
-```json
-{"id":"[UUID]","timestamp":"[ISO]","promiser":{"agent":"cursor"},"promisee":{"agent":"*","scope":"project"},"promise":{"type":"will-do","summary":"Add OAuth2 with PKCE flow"},"context":{"artifacts":["src/auth/oauth.ts"]},"status":"active"}
-```
-
-### Promise Types
-
-| Type | Use When |
-|------|----------|
-| `will-do` | Committing to perform an action |
-| `will-not-do` | Committing to avoid something |
-| `will-maintain` | Keeping something stable |
-| `will-provide` | Making something available |
-
-### After Work: Write a Report
-
-Append to `.ledgersync/reports.jsonl`:
-
-```json
-{"id":"[UUID]","timestamp":"[ISO]","reporter":{"agent":"cursor","role":"actor"},"promiseId":"[promise-id]","report":{"workCompleted":"Added basic PKCE flow","remaining":["Refresh tokens"],"confidenceInCompletion":0.6}}
-```
-
-### Reading Other Agents' Promises
-
-On session start, also read `.ledgersync/promises.jsonl`:
-1. Check for **active promises** from other agents
-2. Avoid conflicting with active promises on same files
-3. If taking over work, make your own promise linking to theirs
-
-See `LedgerSync/templates/PROMISES.md` for full protocol.
