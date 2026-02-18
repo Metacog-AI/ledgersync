@@ -72,7 +72,7 @@ program
         const ledgersyncDir = path.join(cwd, LEDGERSYNC_DIR);
 
         if (fs.existsSync(ledgersyncDir)) {
-            console.log(chalk.yellow('⚠️  .ledgersync already exists'));
+            console.log(chalk.yellow('Warning:.ledgersync already exists'));
             return;
         }
 
@@ -130,10 +130,10 @@ program
             }
         }
 
-        console.log(chalk.green('✅ Initialized .ledgersync/'));
+        console.log(chalk.green('Done:Initialized .ledgersync/'));
         console.log(chalk.gray(`   Created: ${CONFIG_FILE}, ${LEDGER_FILE}, ${PROMISES_FILE}, ${REPORTS_FILE}`));
         if (copiedTemplates.length > 0) {
-            console.log(chalk.green(`✅ Copied agent templates: ${copiedTemplates.join(', ')}`));
+            console.log(chalk.green(`Done:Copied agent templates: ${copiedTemplates.join(', ')}`));
         }
         console.log('');
         console.log(chalk.cyan('Next steps:'));
@@ -156,7 +156,7 @@ program
         const root = findLedgersyncRoot();
 
         if (!root) {
-            console.log(chalk.red('❌ No .ledgersync folder found. Run `ledgersync init` first.'));
+            console.log(chalk.red('Error:No .ledgersync folder found. Run `ledgersync init` first.'));
             process.exit(1);
         }
 
@@ -196,7 +196,7 @@ program
             if (entry.artifacts.length > 0) {
                 console.log(chalk.gray('Files:'));
                 entry.artifacts.forEach(a => {
-                    const icon = a.action === 'created' ? '➕' : a.action === 'modified' ? '📝' : a.action === 'deleted' ? '🗑️' : '👁️';
+                    const icon = a.action === 'created' ? '+' : a.action === 'modified' ? '~' : a.action === 'deleted' ? '-' : '.';
                     console.log(`  ${icon} ${a.path}`);
                 });
             }
@@ -220,7 +220,7 @@ program
         const root = findLedgersyncRoot();
 
         if (!root) {
-            console.log(chalk.red('❌ No .ledgersync folder found. Run `ledgersync init` first.'));
+            console.log(chalk.red('Error:No .ledgersync folder found. Run `ledgersync init` first.'));
             process.exit(1);
         }
 
@@ -248,7 +248,7 @@ program
         const root = findLedgersyncRoot();
 
         if (!root) {
-            console.log(chalk.red('❌ No .ledgersync folder found. Run `ledgersync init` first.'));
+            console.log(chalk.red('Error:No .ledgersync folder found. Run `ledgersync init` first.'));
             process.exit(1);
         }
 
@@ -256,9 +256,9 @@ program
 
         if (valid) {
             const entries = readLedger(root);
-            console.log(chalk.green(`✅ Ledger is valid (${entries.length} entries)`));
+            console.log(chalk.green(`Done:Ledger is valid (${entries.length} entries)`));
         } else {
-            console.log(chalk.red('❌ Validation errors:'));
+            console.log(chalk.red('Error:Validation errors:'));
             errors.forEach(e => console.log(chalk.red(`   • ${e}`)));
             process.exit(1);
         }
@@ -281,7 +281,7 @@ program
         const root = findLedgersyncRoot();
 
         if (!root) {
-            console.log(chalk.red('❌ No .ledgersync folder found. Run `ledgersync init` first.'));
+            console.log(chalk.red('Error:No .ledgersync folder found. Run `ledgersync init` first.'));
             process.exit(1);
         }
 
@@ -297,7 +297,7 @@ program
 
         appendEntry(root, entry);
 
-        console.log(chalk.green('✅ Entry added'));
+        console.log(chalk.green('Done:Entry added'));
         console.log(chalk.gray(`   ID: ${entry.id}`));
     });
 
@@ -324,13 +324,13 @@ promiseCommand
     .action((options) => {
         const root = findLedgersyncRoot();
         if (!root) {
-            console.log(chalk.red('❌ No .ledgersync folder found. Run `ledgersync init` first.'));
+            console.log(chalk.red('Error:No .ledgersync folder found. Run `ledgersync init` first.'));
             process.exit(1);
         }
 
         const validTypes = ['will-do', 'will-not-do', 'will-maintain', 'will-provide'];
         if (!validTypes.includes(options.type)) {
-            console.log(chalk.red(`❌ Invalid type. Must be one of: ${validTypes.join(', ')}`));
+            console.log(chalk.red(`Error:Invalid type. Must be one of: ${validTypes.join(', ')}`));
             process.exit(1);
         }
 
@@ -348,7 +348,7 @@ promiseCommand
 
         appendPromise(root, promise);
 
-        console.log(chalk.green('✅ Promise created'));
+        console.log(chalk.green('Done:Promise created'));
         console.log(chalk.gray(`   ID: ${promise.id}`));
         console.log(chalk.gray(`   ${options.agent} → ${options.to}: ${options.type} "${options.summary}"`));
     });
@@ -365,7 +365,7 @@ promiseCommand
     .action((options) => {
         const root = findLedgersyncRoot();
         if (!root) {
-            console.log(chalk.red('❌ No .ledgersync folder found. Run `ledgersync init` first.'));
+            console.log(chalk.red('Error:No .ledgersync folder found. Run `ledgersync init` first.'));
             process.exit(1);
         }
 
@@ -419,13 +419,13 @@ promiseCommand
     .action((promiseId, options) => {
         const root = findLedgersyncRoot();
         if (!root) {
-            console.log(chalk.red('❌ No .ledgersync folder found. Run `ledgersync init` first.'));
+            console.log(chalk.red('Error:No .ledgersync folder found. Run `ledgersync init` first.'));
             process.exit(1);
         }
 
         const validStatuses = ['fulfilled', 'broken', 'withdrawn'];
         if (!validStatuses.includes(options.status)) {
-            console.log(chalk.red(`❌ Invalid status. Must be one of: ${validStatuses.join(', ')}`));
+            console.log(chalk.red(`Error:Invalid status. Must be one of: ${validStatuses.join(', ')}`));
             process.exit(1);
         }
 
@@ -434,17 +434,17 @@ promiseCommand
         const promise = promises.find(p => p.id === promiseId || p.id.startsWith(promiseId));
 
         if (!promise) {
-            console.log(chalk.red(`❌ Promise not found: ${promiseId}`));
+            console.log(chalk.red(`Error:Promise not found: ${promiseId}`));
             process.exit(1);
         }
 
         const updated = resolvePromise(root, promise.id, options.status as PromiseStatus);
 
         if (updated) {
-            console.log(chalk.green(`✅ Promise resolved: ${options.status}`));
+            console.log(chalk.green(`Done:Promise resolved: ${options.status}`));
             console.log(chalk.gray(`   ${updated.promise.summary}`));
         } else {
-            console.log(chalk.red('❌ Failed to resolve promise'));
+            console.log(chalk.red('Error:Failed to resolve promise'));
         }
     });
 
@@ -455,7 +455,7 @@ promiseCommand
     .action((promiseId) => {
         const root = findLedgersyncRoot();
         if (!root) {
-            console.log(chalk.red('❌ No .ledgersync folder found. Run `ledgersync init` first.'));
+            console.log(chalk.red('Error:No .ledgersync folder found. Run `ledgersync init` first.'));
             process.exit(1);
         }
 
@@ -464,17 +464,17 @@ promiseCommand
         const promise = promises.find(p => p.id === promiseId || p.id.startsWith(promiseId));
 
         if (!promise) {
-            console.log(chalk.red(`❌ Promise not found: ${promiseId}`));
+            console.log(chalk.red(`Error:Promise not found: ${promiseId}`));
             process.exit(1);
         }
 
         const updated = withdrawPromise(root, promise.id);
 
         if (updated) {
-            console.log(chalk.green('✅ Promise withdrawn'));
+            console.log(chalk.green('Done:Promise withdrawn'));
             console.log(chalk.gray(`   ${updated.promise.summary}`));
         } else {
-            console.log(chalk.red('❌ Failed to withdraw promise'));
+            console.log(chalk.red('Error:Failed to withdraw promise'));
         }
     });
 
@@ -501,7 +501,7 @@ reportCommand
     .action((options) => {
         const root = findLedgersyncRoot();
         if (!root) {
-            console.log(chalk.red('❌ No .ledgersync folder found. Run `ledgersync init` first.'));
+            console.log(chalk.red('Error:No .ledgersync folder found. Run `ledgersync init` first.'));
             process.exit(1);
         }
 
@@ -510,13 +510,13 @@ reportCommand
         const promise = promises.find(p => p.id === options.promise || p.id.startsWith(options.promise));
 
         if (!promise) {
-            console.log(chalk.red(`❌ Promise not found: ${options.promise}`));
+            console.log(chalk.red(`Error:Promise not found: ${options.promise}`));
             process.exit(1);
         }
 
         const confidence = parseFloat(options.confidence);
         if (isNaN(confidence) || confidence < 0 || confidence > 1) {
-            console.log(chalk.red('❌ Confidence must be a number between 0.0 and 1.0'));
+            console.log(chalk.red('Error:Confidence must be a number between 0.0 and 1.0'));
             process.exit(1);
         }
 
@@ -535,7 +535,7 @@ reportCommand
 
         appendReport(root, report);
 
-        console.log(chalk.green('✅ Work report added'));
+        console.log(chalk.green('Done:Work report added'));
         console.log(chalk.gray(`   ID: ${report.id}`));
         console.log(chalk.gray(`   Promise: ${promise.promise.summary}`));
         console.log(chalk.gray(`   Confidence: ${Math.round(confidence * 100)}%`));
@@ -551,13 +551,13 @@ reportCommand
     .action((promiseId, options) => {
         const root = findLedgersyncRoot();
         if (!root) {
-            console.log(chalk.red('❌ No .ledgersync folder found. Run `ledgersync init` first.'));
+            console.log(chalk.red('Error:No .ledgersync folder found. Run `ledgersync init` first.'));
             process.exit(1);
         }
 
         const validStatuses = ['fulfilled', 'partial', 'broken'];
         if (!validStatuses.includes(options.status)) {
-            console.log(chalk.red(`❌ Invalid verdict. Must be one of: ${validStatuses.join(', ')}`));
+            console.log(chalk.red(`Error:Invalid verdict. Must be one of: ${validStatuses.join(', ')}`));
             process.exit(1);
         }
 
@@ -566,7 +566,7 @@ reportCommand
         const promise = promises.find(p => p.id === promiseId || p.id.startsWith(promiseId));
 
         if (!promise) {
-            console.log(chalk.red(`❌ Promise not found: ${promiseId}`));
+            console.log(chalk.red(`Error:Promise not found: ${promiseId}`));
             process.exit(1);
         }
 
@@ -579,7 +579,7 @@ reportCommand
         );
 
         if (result) {
-            console.log(chalk.green(`✅ Verdict added: ${options.status}`));
+            console.log(chalk.green(`Done:Verdict added: ${options.status}`));
             console.log(chalk.gray(`   Promise: ${promise.promise.summary}`));
             console.log(chalk.gray(`   Reason: ${options.reason}`));
 
@@ -587,7 +587,7 @@ reportCommand
                 console.log(chalk.cyan(`   Promise status updated to: ${result.promise.status}`));
             }
         } else {
-            console.log(chalk.red('❌ Failed to add verdict'));
+            console.log(chalk.red('Error:Failed to add verdict'));
         }
     });
 
@@ -603,7 +603,7 @@ reportCommand
     .action((options) => {
         const root = findLedgersyncRoot();
         if (!root) {
-            console.log(chalk.red('❌ No .ledgersync folder found. Run `ledgersync init` first.'));
+            console.log(chalk.red('Error:No .ledgersync folder found. Run `ledgersync init` first.'));
             process.exit(1);
         }
 
@@ -676,7 +676,7 @@ program
     .action((options) => {
         const root = findLedgersyncRoot();
         if (!root) {
-            console.log(chalk.red('❌ No .ledgersync folder found. Run `ledgersync init` first.'));
+            console.log(chalk.red('Error:No .ledgersync folder found. Run `ledgersync init` first.'));
             process.exit(1);
         }
 
@@ -700,7 +700,7 @@ program
         console.log('');
 
         // Promises overview
-        console.log(chalk.cyan('📋 PROMISES'));
+        console.log(chalk.cyan('PROMISES'));
         console.log(`   Total: ${promiseSummary.total}`);
         console.log(`   ${chalk.green('● Active:')} ${promiseSummary.active}`);
         console.log(`   ${chalk.blue('● Fulfilled:')} ${promiseSummary.fulfilled}`);
@@ -710,7 +710,7 @@ program
 
         // Active promises
         if (activePromises.length > 0) {
-            console.log(chalk.cyan('🎯 ACTIVE PROMISES'));
+            console.log(chalk.cyan('ACTIVE PROMISES'));
             activePromises.slice(-5).forEach(p => {
                 const agentColor = getAgentColor(p.promiser.agent);
                 console.log(`   ${agentColor(p.promiser.agent)} → ${p.promisee.agent}`);
@@ -721,7 +721,7 @@ program
         }
 
         // Reports overview
-        console.log(chalk.cyan('📝 REPORTS'));
+        console.log(chalk.cyan('REPORTS'));
         console.log(`   Total: ${reportSummary.total}`);
         console.log(`   With Verdicts: ${reportSummary.withVerdicts}`);
         if (reportSummary.withVerdicts > 0) {
@@ -733,7 +733,7 @@ program
 
         // Agents
         if (Object.keys(promiseSummary.byAgent).length > 0) {
-            console.log(chalk.cyan('🤖 AGENTS'));
+            console.log(chalk.cyan('AGENTS'));
             for (const [agent, count] of Object.entries(promiseSummary.byAgent)) {
                 const agentColor = getAgentColor(agent);
                 console.log(`   ${agentColor(agent)}: ${count} promises`);
