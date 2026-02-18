@@ -109,13 +109,36 @@ program
         fs.writeFileSync(path.join(ledgersyncDir, PROMISES_FILE), '', 'utf-8');
         fs.writeFileSync(path.join(ledgersyncDir, REPORTS_FILE), '', 'utf-8');
 
+        // Copy agent templates to project root
+        const templatesDir = path.join(path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Z]:)/, '$1')), '..', 'templates');
+        const templateMap: [string, string][] = [
+            ['CLAUDE.md', 'CLAUDE.md'],
+            ['CLAUDE.md', 'AGENTS.md'],
+            ['.cursorrules', '.cursorrules'],
+            ['ANTIGRAVITY.md', 'ANTIGRAVITY.md'],
+        ];
+
+        let copiedTemplates: string[] = [];
+        if (fs.existsSync(templatesDir)) {
+            for (const [src, dest] of templateMap) {
+                const srcPath = path.join(templatesDir, src);
+                const destPath = path.join(cwd, dest);
+                if (fs.existsSync(srcPath) && !fs.existsSync(destPath)) {
+                    fs.copyFileSync(srcPath, destPath);
+                    copiedTemplates.push(dest);
+                }
+            }
+        }
+
         console.log(chalk.green('✅ Initialized .ledgersync/'));
         console.log(chalk.gray(`   Created: ${CONFIG_FILE}, ${LEDGER_FILE}, ${PROMISES_FILE}, ${REPORTS_FILE}`));
+        if (copiedTemplates.length > 0) {
+            console.log(chalk.green(`✅ Copied agent templates: ${copiedTemplates.join(', ')}`));
+        }
         console.log('');
         console.log(chalk.cyan('Next steps:'));
         console.log('  1. Edit .ledgersync/config.yaml to register philosophy docs');
-        console.log('  2. Add LedgerSync instructions to your agent configs');
-        console.log('  3. Run `ledgersync summary` to get context for agents');
+        console.log('  2. Run `ledgersync summary` to get context for agents');
     });
 
 // ============================================
