@@ -15,7 +15,7 @@ You use Claude Code. You hit rate limits. You switch to Cursor.
 
 You explain everything again. Context lost. Decisions undone. Time wasted.
 
-But there's a deeper problem. Even when context is preserved, your agents are making decisions in a vacuum — they don't know what your product stands for, how it should feel, or who you're building for. They write correct code, but not *your* code.
+But there's a deeper problem: **agent drift**. Even when context is preserved, your agents are making decisions in a vacuum — they don't know what your product stands for, how it should feel, or who you're building for. They write correct code, but not *your* code. Over time, each agent drifts further from the product's original vision.
 
 ## The Solution
 
